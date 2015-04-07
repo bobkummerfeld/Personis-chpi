@@ -1,6 +1,5 @@
 # Personis
 Personis user modelling and pervasive computing framework
-<<<<<<< HEAD
 
 Documentation including installation instructions and tutorial can be 
 found in the Personis/Doc directory.
@@ -11,6 +10,3 @@ and tutorials.
 For the impatient, you can install Personis by typing the command "./install.sh" 
 in the top level directory. You will get copious output from python as it installs
 packages.
-
-=======
->>>>>>> 81de208a445226c8cdc655e044f5bec3c5c3112f
