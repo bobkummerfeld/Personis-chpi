@@ -1,5 +1,5 @@
 # Personis
-Personis user modelling and pervasive computing framework
+## Personis user modelling and pervasive computing framework
 
 Documentation including installation instructions and tutorial can be 
 found in the Personis/Doc directory.
