@@ -22,7 +22,8 @@
 	tell := 'TELL' item ',' evidencetype ':' item
 	tellchanged := 'TELLCHANGED' item ',' evidencetype ':' item
 	notify := 'NOTIFY' item [item]*
-	action := tell | tellchanged | notify
+	publish := 'PUBLISH' item [item]*
+	action := tell | tellchanged | notify | publish
 	statement := [ cronspec ] patternmatch ':' action
 
  Note:
@@ -32,6 +33,7 @@
 
  <froomBT/seen> ~ '.*' : TELL <froomBT/seen>/location, <froomBT/location>"
  <froomBT/seen> ~ '.*' : NOTIFY 'http://www/qqq.cgi'"
+ <froomBT/seen> ~ '.*' : PUBLISH 'localhost:1883' 'Location' <froomBT/location> "
  <froomBT/seen> ~ '.*' : TELL bob/personal/location, explicit:<froomBT/location>
  <bob/personal/location> ~ '.*' : NOTIFY 'http://www.it.usyd.edu.au/~bob/Personis/tst.cgi'
  ["*/15 * * * *"] <bob/personal/location> ~ '.*' : NOTIFY 'http://www.it.usyd.edu.au/~bob/Personis/tst.cgi'
@@ -131,6 +133,14 @@ def donotify(str, loc, toks):
 	f.close()
 	return
 
+def dopublish(str, loc, toks):
+	print "dopublish::", toks  #--------- debug
+	brokeraddr, brokerport = toks[1].split(":")
+	import paho.mqtt.publish as mqttpublish
+	mqttpublish.single(toks[2], payload=toks[3], hostname=brokeraddr, port=brokerport, keepalive=60)
+	print "PUBLISHed", toks[2], toks[3]
+	return
+
 component = Forward()
 componentval = Literal("<")+Optional(Word(alphas) + Literal('!'))+component+Literal(">")
 componentval.setParseAction(askval)
@@ -147,7 +157,9 @@ tellchanged = Literal('TELLCHANGED') + item + Literal(',') + item + Literal(':')
 tellchanged.setParseAction(dotellchanged)
 notify = Literal('NOTIFY') + OneOrMore(item)
 notify.setParseAction(donotify)
-action = tell | notify | tellchanged
+publish = Literal('PUBLISH') + OneOrMore(item)
+publish.setParseAction(dopublish)
+action = tell | notify | publish | tellchanged
 subgrammar = Optional(cronspec) + patternmatch + Literal(':') + action
 
 user = None
